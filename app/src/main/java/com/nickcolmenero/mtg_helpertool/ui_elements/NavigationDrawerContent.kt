@@ -1,4 +1,4 @@
-package com.nickcolmenero.mtg_helpertool.home
+package com.nickcolmenero.mtg_helpertool.ui_elements
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

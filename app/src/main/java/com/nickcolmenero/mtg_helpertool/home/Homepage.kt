@@ -1,6 +1,5 @@
 package com.nickcolmenero.mtg_helpertool.home
 
-import android.media.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nickcolmenero.mtg_helpertool.R
+import com.nickcolmenero.mtg_helpertool.ui_elements.NavigationDrawerContent
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -89,12 +89,6 @@ fun Homepage(navController: NavController) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Resume Game")
-                }
-                Button(
-                    onClick = { navController.navigate("chooseDungeon") },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Dungeon")
                 }
             }
         }

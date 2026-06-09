@@ -53,7 +53,7 @@ fun PlayerDungeonScreen(
             playerIndex = playerIndex,
             onDungeonSelected = { dungeonId ->
                 val dungeon = dungeonList(dungeonId)
-                val startingRoomId = dungeon.roomsInsideDungeon.minByOrNull { it.RoomID }?.RoomID ?: 1
+                val startingRoomId = dungeon.roomsInsideDungeon.minByOrNull { it.roomID }?.roomID ?: 1
                 gameViewModel.updatePlayerRoom(playerIndex, dungeonId, startingRoomId)
                 // Navigation will be handled by the LaunchedEffect above
             },
@@ -149,7 +149,7 @@ fun ChooseDungeonForPlayer(
         ) {
             Text(
                 if (selectedDungeon != 0)
-                    "Venture into ${dungeonList(selectedDungeon).DungeonName}"
+                    "Venture into ${dungeonList(selectedDungeon).dungeonName}"
                 else
                     "Select a Dungeon"
             )

@@ -51,7 +51,7 @@ fun MainApp() {
                     onDungeonSelected = { dungeonId ->
                         val dungeon = dungeonList(dungeonId)
                         val startingRoomId =
-                            dungeon.roomsInsideDungeon.minByOrNull { it.RoomID }?.RoomID ?: 1
+                            dungeon.roomsInsideDungeon.minByOrNull { it.roomID }?.roomID ?: 1
                         gameViewModel.updatePlayerRoom(playerIndex, dungeonId, startingRoomId)
                         navController.navigate("PlayerDungeon/$playerIndex/$dungeonId/$startingRoomId")
                     },
