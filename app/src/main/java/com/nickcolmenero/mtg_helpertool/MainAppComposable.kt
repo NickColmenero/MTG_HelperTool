@@ -12,11 +12,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.nickcolmenero.mtg_helpertool.dungeonLogic.ChooseDungeonForPlayer
 import com.nickcolmenero.mtg_helpertool.dungeonLogic.DungeonUI
-import com.nickcolmenero.mtg_helpertool.dungeonLogic.PlayerDungeonScreen
 import com.nickcolmenero.mtg_helpertool.dungeonLogic.dungeonList
 import com.nickcolmenero.mtg_helpertool.gamestate.GameViewModel
-import com.nickcolmenero.mtg_helpertool.gamestate.NewGameScreen
-import com.nickcolmenero.mtg_helpertool.gamestate.ResumeGameScreen
+
 import com.nickcolmenero.mtg_helpertool.gamestate.SetupGameScreen
 import com.nickcolmenero.mtg_helpertool.gamestate.TabletopTileLifeCounter
 import com.nickcolmenero.mtg_helpertool.home.Homepage
@@ -37,10 +35,6 @@ fun MainApp() {
                 Homepage(navController)
             }
             composable("setup_game") { SetupGameScreen(navController, gameViewModel) }
-            composable("new_game") { NewGameScreen(navController, gameViewModel) }
-            composable("resume_game") {
-                ResumeGameScreen(navController, gameViewModel)
-            }
             composable("game_screen") {
                 TabletopTileLifeCounter(
                     gameViewModel = gameViewModel,
@@ -56,7 +50,8 @@ fun MainApp() {
                     playerIndex = playerIndex,
                     onDungeonSelected = { dungeonId ->
                         val dungeon = dungeonList(dungeonId)
-                        val startingRoomId = dungeon.roomsInsideDungeon.minByOrNull { it.RoomID }?.RoomID ?: 1
+                        val startingRoomId =
+                            dungeon.roomsInsideDungeon.minByOrNull { it.RoomID }?.RoomID ?: 1
                         gameViewModel.updatePlayerRoom(playerIndex, dungeonId, startingRoomId)
                         navController.navigate("PlayerDungeon/$playerIndex/$dungeonId/$startingRoomId")
                     },
@@ -66,7 +61,6 @@ fun MainApp() {
                 )
             }
 
-            // Make sure this route name matches exactly
             composable(
                 "PlayerDungeon/{playerIndex}/{dungeonId}/{roomId}",
                 arguments = listOf(
@@ -85,13 +79,14 @@ fun MainApp() {
                     selectedDungeonID = dungeonId,
                     currentRoomID = roomId,
                     onExitDungeon = {
-                        gameViewModel.updatePlayerRoom(playerIndex, 0, 0)
-                        navController.popBackStack("game_screen", false)
+                        // Use findNavController().popBackStack with flags
+                        navController.popBackStack("game_screen", inclusive = false)
                     },
                     onBackToGame = {
-                        navController.popBackStack("game_screen", false) }
+                        navController.popBackStack("game_screen", inclusive = false)
+                    }
                 )
             }
         }
+        }
     }
-}

@@ -59,7 +59,7 @@ val _TOA = Dungeons(
 
 fun dungeonList(intSelectedDungeonID: Int): Dungeons {
     // This is in case I forget to add a specific dungeon it defaults to this
-    val nullDungeon = Dungeons("", 0, 0, listOf(
+    val nullDungeon = Dungeons("", 100, 0, listOf(
         DungeonRooms(
             "PlaceHolder Haven't made the images yet*",
             0,R.drawable.ic_launcher_background,

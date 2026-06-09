@@ -90,7 +90,7 @@ fun SetupGameScreen(navController: NavController, gameViewModel: GameViewModel) 
             Button(
                 onClick = {
                     gameViewModel.newGame(numPlayers, selectedLife)
-                    navController.navigate("new_game") {
+                    navController.navigate("game_screen") {
                         popUpTo("setup_game") { inclusive = true } // Optional: remove setup from back stack
                     }
                 },

@@ -85,7 +85,7 @@ fun Homepage(navController: NavController) {
                 }
 
                 Button(
-                    onClick = { navController.navigate("resume_game") },
+                    onClick = { navController.navigate("game_screen") },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Resume Game")

@@ -49,16 +49,18 @@ fun DungeonUI(
     selectedDungeonID: Int,
     currentRoomID: Int,
     onExitDungeon: () -> Unit,
-    onBackToGame: () -> Unit  // Add this new parameter
+    onBackToGame: () -> Unit
 ) {
     val dungeon = dungeonList(selectedDungeonID)
     val players by gameViewModel.players.collectAsState()
     val currentPlayer = players.getOrNull(playerIndex)
 
-    // Use the ViewModel as the source of truth
     var selectedRoomID by remember(currentPlayer?.dungeonProgression) {
         mutableStateOf(currentPlayer?.dungeonProgression ?: currentRoomID)
     }
+
+    // Add a flag to prevent multiple navigation calls
+    var isNavigating by remember { mutableStateOf(false) }
 
     // Update local state when ViewModel changes
     LaunchedEffect(currentPlayer?.dungeonProgression) {
@@ -73,7 +75,6 @@ fun DungeonUI(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Header with player info and buttons
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -89,7 +90,12 @@ fun DungeonUI(
 
             // Back to Game button (preserves progress)
             Button(
-                onClick = onBackToGame,
+                onClick = {
+                    if (!isNavigating) {
+                        isNavigating = true
+                        onBackToGame()
+                    }
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 ),
@@ -100,7 +106,13 @@ fun DungeonUI(
 
             // Exit Dungeon button (clears progress)
             Button(
-                onClick = onExitDungeon,
+                onClick = {
+                    if (!isNavigating) {
+                        isNavigating = true
+                        gameViewModel.updatePlayerRoom(playerIndex, 0, 0)
+                        onExitDungeon()
+                    }
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error
                 )
@@ -108,8 +120,6 @@ fun DungeonUI(
                 Text("Exit Dungeon")
             }
         }
-
-        // Group rooms by their row
         val roomsByRow = dungeon.roomsInsideDungeon.groupBy { it.roomRow }
 
         // Render rows dynamically

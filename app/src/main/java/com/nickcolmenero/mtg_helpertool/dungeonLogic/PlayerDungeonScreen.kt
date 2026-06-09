@@ -1,6 +1,7 @@
 package com.nickcolmenero.mtg_helpertool.dungeonLogic
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,9 +10,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,33 +34,38 @@ fun PlayerDungeonScreen(
 ) {
     val players by gameViewModel.players.collectAsState()
     val player = players.getOrNull(playerIndex)
-
-    // Check if player is already in a dungeon
     val isInDungeon = player?.currDungeon != null && player.currDungeon != 0
 
+    // Use LaunchedEffect for navigation to avoid composition issues
+    LaunchedEffect(isInDungeon, player?.currDungeon, player?.dungeonProgression) {
+        if (isInDungeon && player != null) {
+            navController.navigate("PlayerDungeon/${playerIndex}/${player.currDungeon}/${player.dungeonProgression}") {
+                // Pop up to game_screen to avoid stacking multiple dungeon screens
+                popUpTo("game_screen") { inclusive = false }
+                launchSingleTop = true
+            }
+        }
+    }
+
     if (!isInDungeon) {
-        // Show dungeon selection for this specific player
         ChooseDungeonForPlayer(
             gameViewModel = gameViewModel,
             playerIndex = playerIndex,
             onDungeonSelected = { dungeonId ->
-                // Initialize player at room 1 (or starting room) of the dungeon
-                // First, find the starting room ID (smallest RoomID in the dungeon)
                 val dungeon = dungeonList(dungeonId)
-                val startingRoomId =
-                    dungeon.roomsInsideDungeon.minByOrNull { it.RoomID }?.RoomID ?: 1
-
-                // Save to ViewModel
+                val startingRoomId = dungeon.roomsInsideDungeon.minByOrNull { it.RoomID }?.RoomID ?: 1
                 gameViewModel.updatePlayerRoom(playerIndex, dungeonId, startingRoomId)
-
-                // Navigate to the dungeon with the starting room
-                navController.navigate("PlayerDungeon/$playerIndex/$dungeonId/$startingRoomId")
+                // Navigation will be handled by the LaunchedEffect above
             },
-            onBack = { navController.navigate("game_screen") }
+            onBack = {
+                navController.popBackStack("game_screen", false)
+            }
         )
     } else {
-        // Navigate to current dungeon and room
-        navController.navigate("PlayerDungeon/${playerIndex}/${player.currDungeon}/${player.dungeonProgression}")
+        // Show loading or empty state while LaunchedEffect handles navigation
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
     }
 }
 

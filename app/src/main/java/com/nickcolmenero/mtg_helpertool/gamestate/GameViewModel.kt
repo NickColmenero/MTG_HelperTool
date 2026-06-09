@@ -2,18 +2,14 @@ package com.nickcolmenero.mtg_helpertool.gamestate
 
 import android.app.Application
 import android.content.Context
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.AndroidViewModel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
     // Handle potential NullPointerException when getSharedPreferences is called on an uninitialized Application context (e.g. in Previews)
@@ -24,11 +20,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private val _startingLife = MutableStateFlow(20)
-    val startingLife: StateFlow<Int> = _startingLife.asStateFlow()
     private val _startingDungeon = MutableStateFlow(0)
-    val startingDungeon: StateFlow<Int> = _startingDungeon.asStateFlow()  // Was _startingLife.asStateFlow()
     private val _startingDungeonProgression = MutableStateFlow(1)
-    val startingDungeonProgression: StateFlow<Int> = _startingDungeonProgression.asStateFlow()  // Was _startingLife.asStateFlow()
 
     // Use StateFlow for better performance and reactive UI
     private val _players = MutableStateFlow<List<Player>>(emptyList())
@@ -36,10 +29,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         loadGameState()
-    }
-
-    fun playerColors(index: Int): Color {
-        return _players.value.getOrNull(index)?.color ?: Color.Gray
     }
     fun updatePlayerRoom(playerIndex: Int, dungeonID: Int, roomID: Int) {
         _players.update { currentPlayers ->
@@ -92,21 +81,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
         saveGameState()
-    }
-
-    // Helper function to get player by index
-    fun getPlayerLife(index: Int): Int {
-        return _players.value.getOrNull(index)?.life ?: 0
-    }
-
-    // Helper function to get player name
-    fun getPlayerName(index: Int): String {
-        return _players.value.getOrNull(index)?.name ?: "Player ${index + 1}"
-    }
-
-    // Get total number of players
-    fun getPlayerCount(): Int {
-        return _players.value.size
     }
 
     private fun saveGameState() {
