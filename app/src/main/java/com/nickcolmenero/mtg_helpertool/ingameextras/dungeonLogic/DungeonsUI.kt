@@ -1,4 +1,4 @@
-package com.nickcolmenero.mtg_helpertool.dungeonLogic
+package com.nickcolmenero.mtg_helpertool.ingameextras.dungeonLogic
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border

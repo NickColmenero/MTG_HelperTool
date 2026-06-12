@@ -1,4 +1,4 @@
-package com.nickcolmenero.mtg_helpertool
+package com.nickcolmenero.mtg_helpertool.MainActivity
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
@@ -10,9 +10,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.nickcolmenero.mtg_helpertool.dungeonLogic.ChooseDungeonForPlayer
-import com.nickcolmenero.mtg_helpertool.dungeonLogic.DungeonUI
-import com.nickcolmenero.mtg_helpertool.dungeonLogic.dungeonList
+import com.nickcolmenero.mtg_helpertool.ingameextras.dungeonLogic.ChooseDungeonForPlayer
+import com.nickcolmenero.mtg_helpertool.ingameextras.dungeonLogic.DungeonUI
+import com.nickcolmenero.mtg_helpertool.ingameextras.dungeonLogic.dungeonList
 import com.nickcolmenero.mtg_helpertool.gamestate.GameViewModel
 
 import com.nickcolmenero.mtg_helpertool.gamestate.SetupGameScreen

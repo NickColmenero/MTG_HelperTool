@@ -19,13 +19,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         null
     }
 
-    private val _startingLife = MutableStateFlow(20)
+
     private val _startingDungeon = MutableStateFlow(0)
     private val _startingDungeonProgression = MutableStateFlow(1)
 
     // Use StateFlow for better performance and reactive UI
     private val _players = MutableStateFlow<List<Player>>(emptyList())
     val players: StateFlow<List<Player>> = _players.asStateFlow()
+    val startingLife = MutableStateFlow(20)
 
     init {
         loadGameState()
@@ -56,7 +57,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun newGame(numPlayers: Int, life: Int) {
-        _startingLife.value = life
+        startingLife.value = life
         val newPlayers = List(numPlayers) { index ->
             Player(
                 id = index,
@@ -87,7 +88,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         // Use safe call to avoid crash if prefs is null (e.g. in Previews)
         prefs?.edit()?.apply {
             putInt("num_players", _players.value.size)
-            putInt("starting_life", _startingLife.value)
+            putInt("starting_life", startingLife.value)
             _players.value.forEachIndexed { index, player ->
                 putInt("player_life_$index", player.life)
                 putInt("player_color_$index", player.color.toArgb())
@@ -105,7 +106,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val numPlayers = p.getInt("num_players", 0)
         if (numPlayers > 0) {
             val loadedStartingLife = p.getInt("starting_life", 20)
-            _startingLife.value = loadedStartingLife
+            startingLife.value = loadedStartingLife
             val loadedCurrDungeon = p.getInt("player_currDungeon_0", 0)  // Use index 0, not missing variable
             _startingDungeon.value = loadedCurrDungeon
             val loadedDungeonProgression = p.getInt("player_dungeonProgression_0", 1)

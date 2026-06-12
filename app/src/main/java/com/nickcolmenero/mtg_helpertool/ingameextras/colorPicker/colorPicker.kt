@@ -1,4 +1,4 @@
-package com.nickcolmenero.mtg_helpertool.colorPicker
+package com.nickcolmenero.mtg_helpertool.ingameextras.colorPicker
 
 import android.graphics.Bitmap
 import androidx.palette.graphics.Palette

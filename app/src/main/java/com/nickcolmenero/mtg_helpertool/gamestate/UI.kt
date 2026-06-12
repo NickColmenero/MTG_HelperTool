@@ -52,6 +52,7 @@ fun TabletopTileLifeCounter(
     var keypadTargetPlayer by remember { mutableStateOf(0) }
     var showPlayerSelectionForDungeon by remember { mutableStateOf(false) }
 
+    // All of this is for player orientation based off of how many players there are.
     fun playerTextRotation(index: Int): Float {
         return when (totalPlayers) {
             1 -> 0f
@@ -271,7 +272,10 @@ fun TabletopTileLifeCounter(
                     )
                     DropdownMenuItem(
                         text = { Text("Reset Game") },
-                        onClick = { expanded = false }
+                        onClick = { expanded = false
+                            gameViewModel.newGame(totalPlayers, gameViewModel.startingLife.value)
+                            navController.navigate("game_screen")
+                        }
                     )
                     DropdownMenuItem(
                         text = { Text("Color Picker") },
