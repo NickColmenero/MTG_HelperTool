@@ -1,5 +1,6 @@
 package com.nickcolmenero.mtg_helpertool.gamestate
 
+import android.R
 import android.app.Application
 import android.content.Context
 import androidx.compose.ui.graphics.Color
@@ -63,7 +64,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 id = index,
                 life = life,
                 name = "Player ${index + 1}",
-                color = Color.Gray,
+                color = players.value.getOrNull(index)?.color ?: Color.Gray,
                 currDungeon = 0,
                 dungeonProgression = 0
             )

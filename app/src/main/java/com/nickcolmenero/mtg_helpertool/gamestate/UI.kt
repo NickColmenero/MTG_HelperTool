@@ -244,25 +244,25 @@ fun TabletopTileLifeCounter(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
-                    DropdownMenuItem(
-                        text = { Text("Color picker") },
-                        onClick = {
-                            expanded = false
-                            showColorPicker = true
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("option") },
-                        onClick = { expanded = false }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Roll dice") },
-                        onClick = { expanded = false }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Flip coin") },
-                        onClick = { expanded = false }
-                    )
+//                    DropdownMenuItem(
+//                        text = { Text("Color picker") },
+//                        onClick = {
+//                            expanded = false
+//                            showColorPicker = true
+//                        }
+//                    )
+//                    DropdownMenuItem(
+//                        text = { Text("option") },
+//                        onClick = { expanded = false }
+//                    )
+//                    DropdownMenuItem(
+//                        text = { Text("Roll dice") },
+//                        onClick = { expanded = false }
+//                    )
+//                    DropdownMenuItem(
+//                        text = { Text("Flip coin") },
+//                        onClick = { expanded = false }
+//                    )
                     DropdownMenuItem(
                         text = { Text("Venture Into Dungeon") },
                         onClick = {
@@ -363,7 +363,15 @@ fun TabletopTileLifeCounter(
                 }) {
                     Text("Apply to Player ${selectedPlayer + 1}")
                 }
+                Button(
+                    onClick = {
+                    gameViewModel.setPlayerColor(selectedPlayer, Color.Gray)
+
+                },
+                modifier = Modifier.fillMaxWidth()
+                ) {Text("Reset color of Player ${selectedPlayer + 1}") }
             },
+
             dismissButton = {
                 Button(onClick = { showColorPicker = false }) {
                     Text("Cancel")
