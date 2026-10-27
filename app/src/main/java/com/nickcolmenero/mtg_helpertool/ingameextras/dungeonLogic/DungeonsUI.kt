@@ -1,24 +1,16 @@
-package com.nickcolmenero.mtg_helpertool.dungeonLogic
+package com.nickcolmenero.mtg_helpertool.ingameextras.dungeonLogic
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.ScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -37,9 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.nickcolmenero.mtg_helpertool.R
 import com.nickcolmenero.mtg_helpertool.gamestate.GameViewModel
 
 @Composable
@@ -49,16 +39,18 @@ fun DungeonUI(
     selectedDungeonID: Int,
     currentRoomID: Int,
     onExitDungeon: () -> Unit,
-    onBackToGame: () -> Unit  // Add this new parameter
+    onBackToGame: () -> Unit
 ) {
     val dungeon = dungeonList(selectedDungeonID)
     val players by gameViewModel.players.collectAsState()
     val currentPlayer = players.getOrNull(playerIndex)
 
-    // Use the ViewModel as the source of truth
     var selectedRoomID by remember(currentPlayer?.dungeonProgression) {
         mutableStateOf(currentPlayer?.dungeonProgression ?: currentRoomID)
     }
+
+    // Add a flag to prevent multiple navigation calls
+    var isNavigating by remember { mutableStateOf(false) }
 
     // Update local state when ViewModel changes
     LaunchedEffect(currentPlayer?.dungeonProgression) {
@@ -73,7 +65,6 @@ fun DungeonUI(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Header with player info and buttons
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -82,14 +73,19 @@ fun DungeonUI(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Player ${playerIndex + 1} - ${dungeon.DungeonName}",
+                text = "Player ${playerIndex + 1} - ${dungeon.dungeonName}",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f)
             )
 
             // Back to Game button (preserves progress)
             Button(
-                onClick = onBackToGame,
+                onClick = {
+                    if (!isNavigating) {
+                        isNavigating = true
+                        onBackToGame()
+                    }
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 ),
@@ -100,7 +96,13 @@ fun DungeonUI(
 
             // Exit Dungeon button (clears progress)
             Button(
-                onClick = onExitDungeon,
+                onClick = {
+                    if (!isNavigating) {
+                        isNavigating = true
+                        gameViewModel.updatePlayerRoom(playerIndex, 0, 0)
+                        onExitDungeon()
+                    }
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error
                 )
@@ -108,8 +110,6 @@ fun DungeonUI(
                 Text("Exit Dungeon")
             }
         }
-
-        // Group rooms by their row
         val roomsByRow = dungeon.roomsInsideDungeon.groupBy { it.roomRow }
 
         // Render rows dynamically
@@ -121,20 +121,20 @@ fun DungeonUI(
             ) {
                 roomsInRow.forEach { room ->
                     // Check if player can move to this room
-                    val currentRoomObj = dungeon.roomsInsideDungeon.firstOrNull { it.RoomID == selectedRoomID }
-                    val canMove = currentRoomObj?.roomCanMoveTo?.contains(room.RoomID) == true
-                    val isCurrentRoom = room.RoomID == selectedRoomID
+                    val currentRoomObj = dungeon.roomsInsideDungeon.firstOrNull { it.roomID == selectedRoomID }
+                    val canMove = currentRoomObj?.roomCanMoveTo?.contains(room.roomID) == true
+                    val isCurrentRoom = room.roomID == selectedRoomID
 
                     DungeonTile(
-                        imageRes = room.roomImagelocation,
+                        imageRes = room.roomImageLocation,
                         isSelected = false,
                         isCurrentRoom = isCurrentRoom,
                         onClick = {
                             if (canMove || isCurrentRoom) {
                                 // Update the ViewModel
-                                gameViewModel.updatePlayerRoom(playerIndex, selectedDungeonID, room.RoomID)
+                                gameViewModel.updatePlayerRoom(playerIndex, selectedDungeonID, room.roomID)
                                 // Update local state
-                                selectedRoomID = room.RoomID
+                                selectedRoomID = room.roomID
                             }
                         },
                         modifier = Modifier

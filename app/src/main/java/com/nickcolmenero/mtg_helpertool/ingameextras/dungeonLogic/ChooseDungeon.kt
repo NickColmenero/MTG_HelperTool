@@ -1,10 +1,8 @@
-package com.nickcolmenero.mtg_helpertool.dungeonLogic
+package com.nickcolmenero.mtg_helpertool.ingameextras.dungeonLogic
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,7 +25,7 @@ import com.nickcolmenero.mtg_helpertool.R
 
 
 @Composable
-fun chooseDungeon(navController: NavController) {
+fun ChooseDungeon(navController: NavController) {
 
     var selectedDungeon by remember { mutableStateOf(0) }
 
@@ -93,7 +91,7 @@ fun chooseDungeon(navController: NavController) {
             modifier = Modifier.fillMaxWidth()
         ) {
             val dungeonName = if (selectedDungeon != 0) {
-                dungeonList(selectedDungeon).DungeonName // assuming dungeonList returns a Dungeon object with dungeonName
+                dungeonList(selectedDungeon).dungeonName // assuming dungeonList returns a Dungeon object with dungeonName
             } else {
                 null
             }

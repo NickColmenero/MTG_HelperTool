@@ -1,19 +1,16 @@
 package com.nickcolmenero.mtg_helpertool.gamestate
 
+import android.R
 import android.app.Application
 import android.content.Context
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.AndroidViewModel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
     // Handle potential NullPointerException when getSharedPreferences is called on an uninitialized Application context (e.g. in Previews)
@@ -23,23 +20,17 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         null
     }
 
-    private val _startingLife = MutableStateFlow(20)
-    val startingLife: StateFlow<Int> = _startingLife.asStateFlow()
+
     private val _startingDungeon = MutableStateFlow(0)
-    val startingDungeon: StateFlow<Int> = _startingDungeon.asStateFlow()  // Was _startingLife.asStateFlow()
     private val _startingDungeonProgression = MutableStateFlow(1)
-    val startingDungeonProgression: StateFlow<Int> = _startingDungeonProgression.asStateFlow()  // Was _startingLife.asStateFlow()
 
     // Use StateFlow for better performance and reactive UI
     private val _players = MutableStateFlow<List<Player>>(emptyList())
     val players: StateFlow<List<Player>> = _players.asStateFlow()
+    val startingLife = MutableStateFlow(20)
 
     init {
         loadGameState()
-    }
-
-    fun playerColors(index: Int): Color {
-        return _players.value.getOrNull(index)?.color ?: Color.Gray
     }
     fun updatePlayerRoom(playerIndex: Int, dungeonID: Int, roomID: Int) {
         _players.update { currentPlayers ->
@@ -67,13 +58,13 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun newGame(numPlayers: Int, life: Int) {
-        _startingLife.value = life
+        startingLife.value = life
         val newPlayers = List(numPlayers) { index ->
             Player(
                 id = index,
                 life = life,
                 name = "Player ${index + 1}",
-                color = Color.Gray,
+                color = players.value.getOrNull(index)?.color ?: Color.Gray,
                 currDungeon = 0,
                 dungeonProgression = 0
             )
@@ -94,26 +85,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         saveGameState()
     }
 
-    // Helper function to get player by index
-    fun getPlayerLife(index: Int): Int {
-        return _players.value.getOrNull(index)?.life ?: 0
-    }
-
-    // Helper function to get player name
-    fun getPlayerName(index: Int): String {
-        return _players.value.getOrNull(index)?.name ?: "Player ${index + 1}"
-    }
-
-    // Get total number of players
-    fun getPlayerCount(): Int {
-        return _players.value.size
-    }
-
     private fun saveGameState() {
         // Use safe call to avoid crash if prefs is null (e.g. in Previews)
         prefs?.edit()?.apply {
             putInt("num_players", _players.value.size)
-            putInt("starting_life", _startingLife.value)
+            putInt("starting_life", startingLife.value)
             _players.value.forEachIndexed { index, player ->
                 putInt("player_life_$index", player.life)
                 putInt("player_color_$index", player.color.toArgb())
@@ -131,7 +107,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val numPlayers = p.getInt("num_players", 0)
         if (numPlayers > 0) {
             val loadedStartingLife = p.getInt("starting_life", 20)
-            _startingLife.value = loadedStartingLife
+            startingLife.value = loadedStartingLife
             val loadedCurrDungeon = p.getInt("player_currDungeon_0", 0)  // Use index 0, not missing variable
             _startingDungeon.value = loadedCurrDungeon
             val loadedDungeonProgression = p.getInt("player_dungeonProgression_0", 1)
